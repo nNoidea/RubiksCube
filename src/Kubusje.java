@@ -2,7 +2,7 @@ public class Kubusje {
     Vlakje[] planes = new Vlakje[6];
 
     public Kubusje(double[] startPoint) {
-        String color = "white";
+        String color = "zwart";
         double[][] points = new double[4][3];
 
         // Bottom
