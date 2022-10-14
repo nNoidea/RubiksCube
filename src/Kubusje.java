@@ -5,7 +5,7 @@ public class Kubusje {
         String color = "white";
         double[][] points = new double[4][3];
 
-        // Bottom OUIASHDUHAUDHASID
+        // Bottom
         resetToStartPoint(points, startPoint);
         // Increase x by 1
         points[1][0] += 1;
