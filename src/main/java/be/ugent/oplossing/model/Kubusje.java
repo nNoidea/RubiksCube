@@ -1,3 +1,7 @@
+package be.ugent.oplossing.model;
+
+
+
 public class Kubusje {
     Vlakje[] planes = new Vlakje[6];
 
@@ -10,7 +14,7 @@ public class Kubusje {
         // Increase x by 1
         points[1][0] += 1;
         // Increase y by 1
-        points[2][1] += 1;  
+        points[2][1] += 1;
         // Increase both x and y by 1
         points[3][0] += 1;
         points[3][1] += 1;

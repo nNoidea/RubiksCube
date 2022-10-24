@@ -1,5 +1,7 @@
 package be.ugent.oplossing.model;
 
+
+
 public class RubiksKubus {
     double[] myArray = { 0, 0, 0 };
     Kubusje[] littleCube = new Kubusje[27];

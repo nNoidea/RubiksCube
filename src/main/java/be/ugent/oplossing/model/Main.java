@@ -1,5 +1,7 @@
 package be.ugent.oplossing.model;
 
+import java.util.Arrays;
+
 import java.io.FileNotFoundException;
 import java.util.List;
 
@@ -15,15 +17,13 @@ public class Main {
                     if (i3 == 3)
                         endChar = "";
 
-                    System.out.print(Arrays.toString(cube.littleCube[i].planes[i2].points[i3])
-                            + cube.littleCube[i].planes[i2].color + endChar);
+                    System.out.print(Arrays.toString(cube.littleCube[i].planes[i2].points[i3]) + endChar);
                 }
                 System.out.print("\n");
             }
             System.out.print("\n");
         }
 
-        ///////////////////
         test_1();
         test_2();
     }
