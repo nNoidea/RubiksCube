@@ -5,9 +5,9 @@ import javafx.scene.paint.Color;
 
 import java.util.Arrays;
 
-public class Vlakje implements IFace{
+public class Vlakje implements IFace {
     // Create a nested array for points
-    private Point3D[] punten ;
+    private Point3D[] punten;
     private Color kleur;
 
     double[][] points;
@@ -17,9 +17,10 @@ public class Vlakje implements IFace{
         this.punten = points;
         this.kleur = color;
     }
-    public Vlakje(double[][] points, String color){
-        this.color=color;
-        this.points=points;
+
+    public Vlakje(double[][] points, String color) {
+        this.color = color;
+        this.points = points;
     }
 
     @Override
@@ -31,7 +32,8 @@ public class Vlakje implements IFace{
     public Point3D[] getFaceCorners() {
         return punten;
     }
-    public String toString(){
-        return Arrays.toString(punten)+"   "+ kleur;
+
+    public String toString() {
+        return Arrays.toString(punten) + "   " + kleur;
     }
 }

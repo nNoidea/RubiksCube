@@ -51,12 +51,13 @@ public class RubiksViewer extends Application {
     }
 
     private List<IFace> initRubikCube() throws FileNotFoundException {
-        // Haal deze regels uit commentaar; dan zal het RubiksKubus-object gebruikt worden
+        // Haal deze regels uit commentaar; dan zal het RubiksKubus-object gebruikt
+        // worden
         // Maak je eigen implementatie van de rubiks interface.
         IRubikCube cube = new RubiksKubus3("infoKubus.csv");
         return cube.getAllFaces();
 
-        //return RubiksReader.ReadFromFile("test.csv");
+        // return RubiksReader.ReadFromFile("test.csv");
     }
 
     private void addCamera(Scene scene) {
@@ -74,10 +75,10 @@ public class RubiksViewer extends Application {
         });
 
         scene.setOnMouseDragged(me -> {
-            rotateX.setAngle(rotateX.getAngle()+(me.getSceneY() - anchorY)/2);
-            rotateY.setAngle(rotateY.getAngle()-(me.getSceneX() - anchorX)/2);
+            rotateX.setAngle(rotateX.getAngle() + (me.getSceneY() - anchorY) / 2);
+            rotateY.setAngle(rotateY.getAngle() - (me.getSceneX() - anchorX) / 2);
             anchorX = me.getSceneX();
             anchorY = me.getSceneY();
         });
     }
-} 
+}

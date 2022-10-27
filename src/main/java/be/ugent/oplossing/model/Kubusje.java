@@ -1,7 +1,5 @@
 package be.ugent.oplossing.model;
 
-
-
 public class Kubusje {
     Vlakje[] planes = new Vlakje[6];
 
