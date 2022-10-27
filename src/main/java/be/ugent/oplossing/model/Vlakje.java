@@ -10,17 +10,10 @@ public class Vlakje implements IFace {
     private Point3D[] punten;
     private Color kleur;
 
-    double[][] points;
-    String color;
 
     public Vlakje(Point3D[] points, Color color) {
         this.punten = points;
         this.kleur = color;
-    }
-
-    public Vlakje(double[][] points, String color) {
-        this.color = color;
-        this.points = points;
     }
 
     @Override

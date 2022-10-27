@@ -4,7 +4,6 @@ import be.ugent.oplossing.model.IFace;
 import javafx.geometry.Point3D;
 import javafx.scene.paint.Color;
 
-
 public class FaceView implements IFace {
     private final Color color;
     private final Point3D[] corners;

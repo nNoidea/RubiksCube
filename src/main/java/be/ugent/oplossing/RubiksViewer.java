@@ -1,7 +1,6 @@
 package be.ugent.oplossing;
 
 import be.ugent.oplossing.model.*;
-import be.ugent.oplossing.show.RubiksReader;
 import be.ugent.oplossing.show.Shape3DRectangle;
 import javafx.application.Application;
 import javafx.scene.AmbientLight;
@@ -30,7 +29,7 @@ public class RubiksViewer extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws FileNotFoundException {
+    public void start(Stage primaryStage) throws FileNotFoundException{
         final Group root = new Group();
         final Scene scene = new Scene(root, 500, 500, true);
         scene.setFill(BACKGROUND_COLOR);
@@ -48,15 +47,15 @@ public class RubiksViewer extends Application {
         primaryStage.setTitle("Rubik's Cube Viewer");
         primaryStage.setScene(scene);
         primaryStage.show();
+
     }
 
     private List<IFace> initRubikCube() throws FileNotFoundException {
         // Haal deze regels uit commentaar; dan zal het RubiksKubus-object gebruikt
         // worden
         // Maak je eigen implementatie van de rubiks interface.
-        IRubikCube cube = new RubiksKubus3("infoKubus.csv");
+        IRubikCube cube = new RubiksKubus("infoKubus.csv");
         return cube.getAllFaces();
-
         // return RubiksReader.ReadFromFile("test.csv");
     }
 
