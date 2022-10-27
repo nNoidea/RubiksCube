@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+
 public class Kubusje2 {
 
     private Point3D middelpunt;
@@ -14,20 +15,21 @@ public class Kubusje2 {
     private Vlakje[] vlakjes = new Vlakje[6];
     private String[] kleuren;
 
+
     public Kubusje2(Point3D middelpunt, String[] kleuren) {
-        // kubusje wordt gemaakt op basis van zijn middelpunt (x,y,z)
+        //kubusje wordt gemaakt op basis van zijn middelpunt (x,y,z)
         this.middelpunt = middelpunt;
         double x = middelpunt.getX();
         double y = middelpunt.getY();
         double z = middelpunt.getZ();
 
-        // op basis van het middelpunt worden de andere 8 hoekpunten van het kubusje
-        // berekend
-        // geautomatiseerbaar?
-        this.hoekpunten = new Point3D[] { new Point3D(x - 1, y - 1, z - 1), new Point3D(x + 1, y - 1, z - 1),
+        //op basis van het middelpunt worden de andere 8 hoekpunten van het kubusje berekend
+        //geautomatiseerbaar?
+        this.hoekpunten = new Point3D[]{new Point3D(x - 1, y - 1, z - 1), new Point3D(x + 1, y - 1, z - 1),
                 new Point3D(x + 1, y + 1, z - 1), new Point3D(x - 1, y + 1, z - 1),
                 new Point3D(x - 1, y - 1, z + 1), new Point3D(x + 1, y - 1, z + 1),
-                new Point3D(x + 1, y + 1, z + 1), new Point3D(x - 1, y + 1, z + 1) };
+                new Point3D(x + 1, y + 1, z + 1), new Point3D(x - 1, y + 1, z + 1)};
+
 
         // op basis van de hoekpunten worden er 6 vlakken geinitializeerd
         this.kleuren = kleuren;
@@ -36,7 +38,7 @@ public class Kubusje2 {
     }
 
     private Point3D rotatePoint(char axis, Point3D coordinaat, double angle) {
-        // draai individueel punt rond de z-as
+        //draai individueel punt rond de z-as
         if (axis == 'z') {
             if (coordinaat.getY() > 0) {
                 angle += Math.atan(-coordinaat.getX() / coordinaat.getY());
@@ -48,7 +50,7 @@ public class Kubusje2 {
             return coordinate;
         }
 
-        // draai individueel punt rond de x-as
+        //draai individueel punt rond de x-as
         else if (axis == 'x') {
             if (coordinaat.getY() > 0) {
                 angle += Math.atan(coordinaat.getZ() / coordinaat.getY());
@@ -60,7 +62,7 @@ public class Kubusje2 {
             return coordinate;
         }
 
-        // draai individueel punt rond de y-as
+        //draai individueel punt rond de y-as
         else {
             if (coordinaat.getX() < 0) {
                 angle += Math.atan(coordinaat.getZ() / (-coordinaat.getX()));
@@ -74,8 +76,8 @@ public class Kubusje2 {
     }
 
     public void rotateKubusje(char axis, double angle) {
-        // draai alle hoekpunten van het kubusje
-        // pas dan ook de vlakjes jan
+        //draai alle hoekpunten van het kubusje
+        //pas dan ook de vlakjes jan
         for (int i = 0; i < 8; i++) {
             hoekpunten[i] = rotatePoint(axis, hoekpunten[i], angle);
             maakVlakjes();
@@ -83,7 +85,7 @@ public class Kubusje2 {
     }
 
     private Color switchColor(String kleur) {
-        // maakt van een string een kleur
+        //maakt van een string een kleur
         if (kleur.equalsIgnoreCase("red"))
             return Color.RED;
         else if (kleur.equalsIgnoreCase("orange"))
@@ -104,18 +106,12 @@ public class Kubusje2 {
     }
 
     private void maakVlakjes() {
-        this.vlakjes[0] = new Vlakje(new Point3D[] { hoekpunten[0], hoekpunten[1], hoekpunten[2], hoekpunten[3] },
-                switchColor(kleuren[1]));
-        this.vlakjes[1] = new Vlakje(new Point3D[] { hoekpunten[4], hoekpunten[5], hoekpunten[6], hoekpunten[7] },
-                switchColor(kleuren[0]));
-        this.vlakjes[2] = new Vlakje(new Point3D[] { hoekpunten[0], hoekpunten[1], hoekpunten[5], hoekpunten[4] },
-                switchColor(kleuren[2]));
-        this.vlakjes[3] = new Vlakje(new Point3D[] { hoekpunten[2], hoekpunten[3], hoekpunten[7], hoekpunten[6] },
-                switchColor(kleuren[3]));
-        this.vlakjes[4] = new Vlakje(new Point3D[] { hoekpunten[1], hoekpunten[2], hoekpunten[6], hoekpunten[5] },
-                switchColor(kleuren[4]));
-        this.vlakjes[5] = new Vlakje(new Point3D[] { hoekpunten[0], hoekpunten[3], hoekpunten[7], hoekpunten[4] },
-                switchColor(kleuren[5]));
+        this.vlakjes[0] = new Vlakje(new Point3D[]{hoekpunten[0], hoekpunten[1], hoekpunten[2], hoekpunten[3]}, switchColor(kleuren[1]));
+        this.vlakjes[1] = new Vlakje(new Point3D[]{hoekpunten[4], hoekpunten[5], hoekpunten[6], hoekpunten[7]}, switchColor(kleuren[0]));
+        this.vlakjes[2] = new Vlakje(new Point3D[]{hoekpunten[0], hoekpunten[1], hoekpunten[5], hoekpunten[4]}, switchColor(kleuren[2]));
+        this.vlakjes[3] = new Vlakje(new Point3D[]{hoekpunten[2], hoekpunten[3], hoekpunten[7], hoekpunten[6]}, switchColor(kleuren[3]));
+        this.vlakjes[4] = new Vlakje(new Point3D[]{hoekpunten[1], hoekpunten[2], hoekpunten[6], hoekpunten[5]}, switchColor(kleuren[4]));
+        this.vlakjes[5] = new Vlakje(new Point3D[]{hoekpunten[0], hoekpunten[3], hoekpunten[7], hoekpunten[4]}, switchColor(kleuren[5]));
     }
 
     public Point3D getMiddelpunt() {
