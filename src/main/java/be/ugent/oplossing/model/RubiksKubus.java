@@ -74,9 +74,9 @@ public class RubiksKubus implements IRubikCube {
         int dimension = 0;
 
         if (degree < 0) {
-            degree = -5;
+            degree = -1;
         } else if (degree > 0) {
-            degree = 5;
+            degree = 1;
         }
 
         char axis = 'x';
@@ -107,23 +107,36 @@ public class RubiksKubus implements IRubikCube {
         } else if (dimension == 2) {
             axis = 'z';
         }
+        int a = 0;
 
-        for (int i = 0; i < length; i++) {
+        for (int k = 0; k < 5; k++) { // Fixes the rounding problem.
+            for (int i = 0; i < length; i++) {
+                int test = 0;
+                for (int j = 0; j < 4; j++) {
+                    double cor[] = new double[3];
+                    Point3D corner = faces.get(i).getFaceCorners()[j];
+                    cor[0] = corner.getX();
+                    cor[1] = corner.getY();
+                    cor[2] = corner.getZ();
 
-            for (int j = 0; j < 4; j++) {
-                double cor[] = new double[3];
-                Point3D corner = faces.get(i).getFaceCorners()[j];
-                cor[0] = corner.getX();
-                cor[1] = corner.getY();
-                cor[2] = corner.getZ();
+                    if ((int) cor[dimension] == coordinate) {
+                        p = getNewCorArray((Vlakje) faces.get(i), axis, degree);
+                        ((Vlakje) faces.get(i)).changeHoekpunten(p);
+                        break;
+                    }
 
-                if ((int) cor[dimension] == coordinate) {
-                    p = getNewCorArray((Vlakje) faces.get(i), axis, degree);
-                    ((Vlakje) faces.get(i)).changeHoekpunten(p);
-                    break;
+                    if (Math.abs((int) cor[dimension] - coordinate) == 2) {
+                        test++;
+                        if (test == 4) {
+                            System.out.println(++a);
+                            p = getNewCorArray((Vlakje) faces.get(i), axis, degree);
+                            ((Vlakje) faces.get(i)).changeHoekpunten(p);
+                        }
+                    }
                 }
             }
         }
+
         return faces;
     }
 
