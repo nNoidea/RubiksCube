@@ -5,6 +5,7 @@ import be.ugent.oplossing.model.IRubikCube;
 import be.ugent.oplossing.model.RubiksKubus;
 import be.ugent.oplossing.show.FaceView;
 import be.ugent.oplossing.show.Shape3DRectangle;
+import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -31,6 +32,7 @@ import javafx.util.Duration;
 
 import java.io.FileNotFoundException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 // drag the mouse over the rectangle to rotate it.
 public class RubiksViewer extends Application {
@@ -112,26 +114,32 @@ public class RubiksViewer extends Application {
         return new Scene(layout);
     }
 
-    private void rotate(String colorStr, boolean clockwise) {
-        System.out.println("Rotate " + (clockwise ? "CW:" : "CCW:") + colorStr);
-        Color color = Color.web(colorStr);
+    private boolean animationCheck = true;
 
-        Timeline timeline = new Timeline();
-        for (int i = 0; i <= 90; i += updateDegreeIncrement) {
-            int degree = i * (clockwise ? -1 : 1);
-            KeyFrame keyFrame = new KeyFrame(Duration.millis(1.0 * animationDuration * i / 90), e -> {
-                List<IFace> faces = rubikCube.getRotation(color, degree);
-                List<Shape3DRectangle> shapes = faces.stream().map(Shape3DRectangle::new).toList();
-                meshGroup.getChildren().clear();
-                meshGroup.getChildren().addAll(shapes);
-            });
-            timeline.getKeyFrames().add(keyFrame);
+    private void rotate(String colorStr, boolean clockwise) {
+        if (animationCheck) {
+            animationCheck = false;
+            System.out.println("Rotate " + (clockwise ? "CW:" : "CCW:") + colorStr);
+            Color color = Color.web(colorStr);
+
+            Timeline timeline = new Timeline();
+            for (int i = 0; i <= 90; i += updateDegreeIncrement) {
+                int degree = i * (clockwise ? -1 : 1);
+                KeyFrame keyFrame = new KeyFrame(Duration.millis(1.0 * animationDuration * i / 90), e -> {
+                    List<IFace> faces = rubikCube.getRotation(color, degree);
+                    List<Shape3DRectangle> shapes = faces.stream().map(Shape3DRectangle::new).toList();
+                    meshGroup.getChildren().clear();
+                    meshGroup.getChildren().addAll(shapes);
+                });
+                timeline.getKeyFrames().add(keyFrame);
+            }
+            // final keyframe to update the cube model in the correct position
+            timeline.getKeyFrames().add(new KeyFrame(Duration.millis(animationDuration), e -> {
+                rubikCube.rotate(color, clockwise);
+            }));
+            timeline.setOnFinished(e -> animationCheck = true);
+            timeline.play();
         }
-        // final keyframe to update the cube model in the correct position
-        timeline.getKeyFrames().add(new KeyFrame(Duration.millis(animationDuration), e -> {
-            rubikCube.rotate(color, clockwise);
-        }));
-        timeline.play();
     }
 
     private void addCamera(SubScene scene) {
@@ -155,4 +163,4 @@ public class RubiksViewer extends Application {
             anchorY = me.getSceneY();
         });
     }
-} 
+}
