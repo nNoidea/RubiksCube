@@ -67,11 +67,17 @@ public class RubiksKubus implements IRubikCube {
 
     @Override
     public List<IFace> getRotation(Color color, int degree) {
+        // Selecteer de relevante vlakjes
+        // Neem de originele hoekpunten
+        // Bereken de rotatie per hoekpunt
+        // Verander de originele hoekpunt met de geroteerde hoekpunt
+        // Draai de geselecteerde vlakjes
+
         int coordinate;
         int dimension;
         if (color == Color.WHITE) {
             coordinate = -3;
-            dimension = 1;
+            dimension = 1; // y
         } else if (color == Color.RED) {
             coordinate = 3;
             dimension = 0;
@@ -91,22 +97,22 @@ public class RubiksKubus implements IRubikCube {
 
         List<IFace> faces = getAllFaces();
 
-        // Hoekpunt[] p = new Hoekpunt[4];
-        // p[0] = new Hoekpunt(3, 3, 3);
-        // p[1] = new Hoekpunt(3, 3, 3);
-        // p[2] = new Hoekpunt(3, 3, 3);
-        // p[3] = new Hoekpunt(3, 3, 3);
+        Hoekpunt[] p = new Hoekpunt[4];
+        p[0] = new Hoekpunt(3, 3, 3);
+        p[1] = new Hoekpunt(3, 3, 3);
+        p[2] = new Hoekpunt(3, 3, 3);
+        p[3] = new Hoekpunt(3, 3, 3);
 
-        // ((Vlakje) faces.get(0)).changeHoekpunten(p[0], p[1], p[2], p[3]);
-
-        // System.out.println(((Vlakje) faces.get(0)).hoekpunten);
+        ((Vlakje) faces.get(0)).changeHoekpunten(p[0], p[1], p[2], p[3]);
 
         int length = faces.size();
 
         int b = 0;
         for (int i = 0; i < length; i++) {
             if (faces.get(i).getFaceColor() == color) {
+                // verander hoekpunt
 
+                System.out.println(faces.get(i));
             }
         }
 
@@ -155,5 +161,4 @@ public class RubiksKubus implements IRubikCube {
 
         return new Point3D(finalPunten[0], finalPunten[1], finalPunten[2]);
     }
-
 }
