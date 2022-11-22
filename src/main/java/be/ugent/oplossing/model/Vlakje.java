@@ -77,11 +77,11 @@ public class Vlakje implements IFace {
         this.kleur = kleur;
     }
 
-    public void changeHoekpunten(Hoekpunt p, Hoekpunt p2, Hoekpunt p3, Hoekpunt p4) {
+    public void changeHoekpunten(Hoekpunt p[]) {
         this.hoekpunten = new ArrayList<>();
-        hoekpunten.add(p);
-        hoekpunten.add(p2);
-        hoekpunten.add(p3);
-        hoekpunten.add(p4);
+        hoekpunten.add(p[0]);
+        hoekpunten.add(p[1]);
+        hoekpunten.add(p[2]);
+        hoekpunten.add(p[3]);
     }
 }

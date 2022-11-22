@@ -1,7 +1,9 @@
 package be.ugent.oplossing.model;
 
 import be.ugent.oplossing.show.RubiksReader;
+import javafx.beans.binding.When.NumberConditionBuilder;
 import javafx.geometry.Point3D;
+import javafx.scene.chart.Axis;
 import javafx.scene.paint.Color;
 
 import java.io.File;
@@ -67,14 +69,23 @@ public class RubiksKubus implements IRubikCube {
 
     @Override
     public List<IFace> getRotation(Color color, int degree) {
+        int originalDegree = degree;
+
+        if (degree < 0) {
+            degree = -5;
+        } else if (degree > 0) {
+            degree = 5;
+        }
+
         // Selecteer de relevante vlakjes
         // Neem de originele hoekpunten
         // Bereken de rotatie per hoekpunt
         // Verander de originele hoekpunt met de geroteerde hoekpunt
         // Draai de geselecteerde vlakjes
 
-        int coordinate;
-        int dimension;
+        int coordinate = 0;
+        int dimension = 0;
+        char axis = 'x';
         if (color == Color.WHITE) {
             coordinate = -3;
             dimension = 1; // y
@@ -95,24 +106,30 @@ public class RubiksKubus implements IRubikCube {
             dimension = 0;
         }
 
+        if (dimension == 0) {
+            axis = 'x';
+        } else if (dimension == 1) {
+            axis = 'y';
+        } else if (dimension == 2) {
+            axis = 'z';
+        }
+
         List<IFace> faces = getAllFaces();
-
         Hoekpunt[] p = new Hoekpunt[4];
-        p[0] = new Hoekpunt(3, 3, 3);
-        p[1] = new Hoekpunt(3, 3, 3);
-        p[2] = new Hoekpunt(3, 3, 3);
-        p[3] = new Hoekpunt(3, 3, 3);
-
-        ((Vlakje) faces.get(0)).changeHoekpunten(p[0], p[1], p[2], p[3]);
-
         int length = faces.size();
 
-        int b = 0;
         for (int i = 0; i < length; i++) {
-            if (faces.get(i).getFaceColor() == color) {
-                // verander hoekpunt
+            for (int j = 0; j < 4; j++) {
+                double cor[] = new double[3];
+                cor[0] = faces.get(i).getFaceCorners()[j].getX();
+                cor[1] = faces.get(i).getFaceCorners()[j].getY();
+                cor[2] = faces.get(i).getFaceCorners()[j].getZ();
 
-                System.out.println(faces.get(i));
+                if ((int) cor[dimension] == coordinate) {
+                    p = getNewCorArray((Vlakje) faces.get(i), axis, degree);
+                    ((Vlakje) faces.get(i)).changeHoekpunten(p);
+                    break;
+                }
             }
         }
 
@@ -125,6 +142,25 @@ public class RubiksKubus implements IRubikCube {
 
     public List<Kubusje> getKubusjes() {
         return kubusjes;
+    }
+
+    public Hoekpunt[] getNewCorArray(Vlakje face, char axis, int degree) {
+        Hoekpunt[] p = new Hoekpunt[4];
+        for (int j = 0; j < 4; j++) {
+            double x = face.getFaceCorners()[j].getX();
+            double y = face.getFaceCorners()[j].getY();
+            double z = face.getFaceCorners()[j].getZ();
+
+            Point3D originalCorner = new Point3D(x, y, z);
+            Point3D newCorner = rotatePoint(axis, originalCorner, degree);
+
+            x = newCorner.getX();
+            y = newCorner.getY();
+            z = newCorner.getZ();
+
+            p[j] = new Hoekpunt(x, y, z);
+        }
+        return p;
     }
 
     private Point3D rotatePoint(char axis, Point3D coordinaat, double degrees) {
