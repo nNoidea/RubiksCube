@@ -1,6 +1,7 @@
 package be.ugent.oplossing.show;
 
 import be.ugent.oplossing.model.IFace;
+import be.ugent.oplossing.model.IRubikCube;
 import javafx.geometry.Point3D;
 
 import java.io.File;
@@ -12,7 +13,7 @@ import java.util.Objects;
 import java.util.Scanner;
 
 public class RubiksReader {
-    public static List<IFace> ReadFromFile(String filename) throws FileNotFoundException {
+    public static IRubikCube ReadFromFile(String filename) throws FileNotFoundException {
         Scanner sc = new Scanner(new File(Objects.requireNonNull(RubiksReader.class.getResource(filename)).getFile()));
         List<IFace> faces = new ArrayList<>();
 
@@ -21,7 +22,7 @@ public class RubiksReader {
             System.out.println(line);
             faces.add(parseLine(line));
         }
-        return faces;
+        return new DummyRubiksCube(faces);
     }
 
 

@@ -1,129 +1,136 @@
 package be.ugent.oplossing.model;
 
 import javafx.geometry.Point3D;
-import javafx.scene.paint.Color;
+
+//       ^ Y
+//       |
+//       |
+//       ---------->  X
+//     /
+//    /
+//   Z
 
 public class Kubusje {
 
-    private Point3D middelpunt;
-    private Point3D[] hoekpunten;
-    private Vlakje[] vlakjes = new Vlakje[6];
-    private String[] kleuren;
+    private Hoekpunt centrum;
+    private Hoekpunt[] hoekpunten;
+    private Vlakje[] vlakjes;
 
-    public Kubusje(Point3D middelpunt, String[] kleuren) {
-        // kubusje wordt gemaakt op basis van zijn middelpunt (x,y,z)
-        this.middelpunt = middelpunt;
-        double x = middelpunt.getX();
-        double y = middelpunt.getY();
-        double z = middelpunt.getZ();
+    // Onderstaande constanten zorgen ervoor dat code leesbaar en snel controleerbaar is.
+    // Ze bepalen de volgorde waarin de vlakken opgeslagen worden in de array 'vlakjes'.
+    // Eerst het vlakje langs de positieve X-as,
+    // dan het vlakje langs de positieve Y-as, dan positieve Z-as,
+    // dan negatieve X-as, negatieve Y-as, negatieve Z-as.
+    // Deze richtingen hebben ook te maken met de kleuren (zie sprint 2:
+    // het middelste gekleurde vlakje van een draaivlak (set van 9 kubusjes)
+    // blijft altijd op dezelfde as zitten, heeft altijd dezelfde kleur).
+    // Wil je al deze informatie (kleur, richting/as, volgorde,...)
+    // in een aparte klasse bundelen? Dat is een mogelijkheid.
+    private static int XPOS = 0;
+    private static int YPOS = 1;
+    private static int ZPOS = 2;
+    private static int XNEG = 3;
+    private static int YNEG = 4;
+    private static int ZNEG = 5;
 
-        // op basis van het middelpunt worden de andere 8 hoekpunten van het kubusje
-        // berekend
-        // geautomatiseerbaar?
-        this.hoekpunten = new Point3D[] {
-                new Point3D(x - 1, y - 1, z - 1), new Point3D(x + 1, y - 1, z - 1),
-                new Point3D(x + 1, y + 1, z - 1), new Point3D(x - 1, y + 1, z - 1),
-                new Point3D(x - 1, y - 1, z + 1), new Point3D(x + 1, y - 1, z + 1),
-                new Point3D(x + 1, y + 1, z + 1), new Point3D(x - 1, y + 1, z + 1) };
+    private static Hoekpunt[] ptnTovCentrum = new Hoekpunt[]{
+            new Hoekpunt(-1, -1, 1),
+            new Hoekpunt(-1, 1, 1),
+            new Hoekpunt(1, 1, 1),
+            new Hoekpunt(1, -1, 1),
+            new Hoekpunt(1, -1, -1),
+            new Hoekpunt(1, 1, -1),
+            new Hoekpunt(-1, 1, -1),
+            new Hoekpunt(-1, -1, -1)};
 
-        // op basis van de hoekpunten worden er 6 vlakken geinitializeerd
-        this.kleuren = kleuren;
-        maakVlakjes();
+    // Merk op: de bovenstaande hoekpunten werden in een specifieke volgorde opgesomd.
+    // Als de hoekpunten in die volgorde overlopen worden en dus aan vlakken toegekend worden,
+    // dan zullen ze altijd in wijzer- of tegenwijzerzin toegevoegd worden - maar nooit 'kriskras'.
+    //                      $**********
+    //                    /         / *
+    //                   ***********  *
+    //                   *         *  *
+    //                   *         *  *
+    //                   *         * *
+    //                   @---------*
+    // Start bij @, volg de sterretjes, en voeg elk hoekpunt dat je tegenkomt in die volgorde toe.
+    // Als je bij $ uitkomt voeg je nog het achterste, onzichtbare punt toe.
 
+
+    // De constructor krijgt het centrum mee,
+    // gevolgd door de kleuren in volgorde volgens X Y Z X' Y' Z' as.
+    // (met X' de negatieve X-as, Y' de negatieve Y-as, ...)
+    // De constructor vult dan alle andere informatie juist in.
+    // GELDT ALLEEN VOOR KUBUSJES DIE NOG 'RECHT' STAAN,
+    // een Kubusje wordt alleen geconstrueerd bij het begin van het programma.
+    public Kubusje(double centrum_x, double centrum_y, double centrum_z, String[] kleuren) {
+        this.centrum = new Hoekpunt(centrum_x, centrum_y, centrum_z); // int zal automatisch naar double omgezet worden
+        hoekpunten = new Hoekpunt[8];
+        vlakjes = new Vlakje[6];
+        initialiseerPuntenEnVlakken(kleuren);
     }
 
-    private Point3D rotatePoint(char axis, Point3D coordinaat, double degrees) {
-        double[] puntMatrix = { coordinaat.getX(), coordinaat.getY(), coordinaat.getZ() };
 
-        double myCos = Math.cos(Math.toRadians(degrees));
-        double mySin = Math.sin(Math.toRadians(degrees));
 
-        double rotationMatrix[][] = new double[3][3];
-        if (axis == 'x') {
-            rotationMatrix = new double[][] {
-                    { 1, 0, 0 },
-                    { 0, myCos, -mySin },
-                    { 0, mySin, myCos } };
-        } else if (axis == 'y') {
-            rotationMatrix = new double[][] {
-                    { myCos, 0, mySin },
-                    { 0, 1, 0 },
-                    { -mySin, 0, myCos } };
-        } else if (axis == 'z') {
-            rotationMatrix = new double[][] {
-                    { myCos, -mySin, 0 },
-                    { mySin, myCos, 0 },
-                    { 0, 0, 1 } };
+    private void initialiseerPuntenEnVlakken(String[] kleuren) {
+        // maak eerst 6 vlakken aan, met de juiste kleuren
+        for(int i=0; i<kleuren.length; i++){
+            vlakjes[i] = new Vlakje(kleuren[i]);
         }
 
-        // rotationMatrix X puntMatrix = finalPunten
-        double[] finalPunten = new double[3];
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                finalPunten[i] += rotationMatrix[i][j] * puntMatrix[j];
+        // maak daarna 8 hoekpunten aan;
+        // bij elk hoekpunt kijk je na of het toegevoegd moet worden aan
+        //     rechter- dan wel linkervlak (XPOS-as of XNEG-as)
+        //     boven- dan wel ondervlak (YPOS-as of YNEG-as)
+        //     voor- dan wel achtervlak (ZPOS-as of ZNEG-as)
+        // (en doe dat dan ook)
+        // (Met wat wiskunde en een extra klasse VergelijkingVanVlak kan het ook
+        // zonder if/else-structuur, maar neem niet teveel hooi ineens op je vork.)
+        for(int i=0; i<ptnTovCentrum.length; i++){
+            hoekpunten[i] = centrum.plus(ptnTovCentrum[i]);
+            if(ptnTovCentrum[i].getX() == 1){
+                vlakjes[XPOS].voegPuntToe(hoekpunten[i]);
+            }
+            else {
+                vlakjes[XNEG].voegPuntToe(hoekpunten[i]);
+            }
+            if(ptnTovCentrum[i].getY()==1){
+                vlakjes[YPOS].voegPuntToe(hoekpunten[i]);
+            }
+            else{
+                vlakjes[YNEG].voegPuntToe(hoekpunten[i]);
+            }
+            if(ptnTovCentrum[i].getZ()==1){
+                vlakjes[ZPOS].voegPuntToe(hoekpunten[i]);
+            }
+            else{
+                vlakjes[ZNEG].voegPuntToe(hoekpunten[i]);
             }
         }
 
-        return new Point3D(finalPunten[0], finalPunten[1], finalPunten[2]);
     }
 
-    public void rotateKubusje(char axis, double angle) {
-        // draai alle hoekpunten van het kubusje
-        // pas dan ook de vlakjes jan
-        for (int i = 0; i < 8; i++) {
-            hoekpunten[i] = rotatePoint(axis, hoekpunten[i], angle);
-            maakVlakjes();
+
+    // Deze methode is handig bij uittesten in Main.java:
+    //    (1) Aankondiging dat hier de info van een Kubusje komt
+    //    (2) coordinaten van het centrum
+    //    (3) alle zijvlakjes (waarbij een zijvlakje zelf weet hoe 't zich omzet in een String)
+    public String toString() {
+
+        StringBuilder builder = new StringBuilder("Kubusje:\n");
+        builder.append(centrum.toString());
+        for(Vlakje vlak : vlakjes){
+            builder.append("\n\t"+vlak);
         }
+        return builder.toString();
     }
 
-    private Color switchColor(String kleur) {
-        kleur = kleur.toLowerCase();
-
-        // maakt van een string een kleur
-        if (kleur.equals("red"))
-            return Color.RED;
-        else if (kleur.equals("orange"))
-            return Color.ORANGE;
-        else if (kleur.equals("green"))
-            return Color.GREEN;
-        else if (kleur.equals("blue"))
-            return Color.BLUE;
-        else if (kleur.equals("yellow"))
-            return Color.YELLOW;
-        else if (kleur.equals("white"))
-            return Color.WHITE;
-
-        return Color.BLACK;
-    }
-
-    public Vlakje[] getVlakjes() {
+    public Vlakje[] getVlakjes(){
         return vlakjes;
     }
 
-    private void maakVlakjes() {
-        this.vlakjes[0] = new Vlakje(new Point3D[] { hoekpunten[0], hoekpunten[1], hoekpunten[2], hoekpunten[3] },
-                switchColor(kleuren[1]));
-        this.vlakjes[1] = new Vlakje(new Point3D[] { hoekpunten[4], hoekpunten[5], hoekpunten[6], hoekpunten[7] },
-                switchColor(kleuren[0]));
-        this.vlakjes[2] = new Vlakje(new Point3D[] { hoekpunten[0], hoekpunten[1], hoekpunten[5], hoekpunten[4] },
-                switchColor(kleuren[2]));
-        this.vlakjes[3] = new Vlakje(new Point3D[] { hoekpunten[2], hoekpunten[3], hoekpunten[7], hoekpunten[6] },
-                switchColor(kleuren[3]));
-        this.vlakjes[4] = new Vlakje(new Point3D[] { hoekpunten[1], hoekpunten[2], hoekpunten[6], hoekpunten[5] },
-                switchColor(kleuren[4]));
-        this.vlakjes[5] = new Vlakje(new Point3D[] { hoekpunten[0], hoekpunten[3], hoekpunten[7], hoekpunten[4] },
-                switchColor(kleuren[5]));
-    }
 
-    public Point3D getMiddelpunt() {
-        return middelpunt;
-    }
+    public Point3D getCentrum() {return centrum.getLocation();}
 
-    public Point3D[] getHoekpunten() {
-        return hoekpunten;
-    }
 
-    public String toString() {
-        return middelpunt.toString();
-    }
 }

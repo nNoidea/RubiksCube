@@ -6,10 +6,11 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="view_model_sprint_2_start" />
+        <module name="view_model_sprint_2_opl" />
         <module name="oplossing" />
         <module name="view_model_sprint_1_start" />
         <module name="view_model_sprint_1_start_zonder_hints" />
-        <module name="RubiksCube2" />
         <module name="oplossing_view_model_sprint_1" />
       </profile>
     </annotationProcessing>

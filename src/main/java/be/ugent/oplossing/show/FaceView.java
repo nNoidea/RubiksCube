@@ -5,6 +5,7 @@ import javafx.geometry.Point3D;
 import javafx.scene.paint.Color;
 
 public class FaceView implements IFace {
+    public final static String[] COLORS = new String[] { "RED", "GREEN", "BLUE", "YELLOW", "ORANGE", "WHITE" };
     private final Color color;
     private final Point3D[] corners;
 
@@ -21,6 +22,11 @@ public class FaceView implements IFace {
         this.corners = corners;
     }
 
+    public FaceView(Color color, Point3D[] corners) {
+        this.color = color;
+        this.corners = corners;
+    }
+
     @Override
     public Color getFaceColor() {
         return color;
@@ -29,5 +35,11 @@ public class FaceView implements IFace {
     @Override
     public Point3D[] getFaceCorners() {
         return corners;
+    }
+
+    @Override
+    public void setColor(Color kleur) {
+        // TODO Auto-generated method stub
+
     }
 }
