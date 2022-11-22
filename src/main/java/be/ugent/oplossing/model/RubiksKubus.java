@@ -1,9 +1,7 @@
 package be.ugent.oplossing.model;
 
 import be.ugent.oplossing.show.RubiksReader;
-import javafx.beans.binding.When.NumberConditionBuilder;
 import javafx.geometry.Point3D;
-import javafx.scene.chart.Axis;
 import javafx.scene.paint.Color;
 
 import java.io.File;
@@ -69,7 +67,11 @@ public class RubiksKubus implements IRubikCube {
 
     @Override
     public List<IFace> getRotation(Color color, int degree) {
-        int originalDegree = degree;
+        List<IFace> faces = getAllFaces();
+        Hoekpunt[] p = new Hoekpunt[4];
+        int length = faces.size();
+        int coordinate = 0;
+        int dimension = 0;
 
         if (degree < 0) {
             degree = -5;
@@ -77,14 +79,6 @@ public class RubiksKubus implements IRubikCube {
             degree = 5;
         }
 
-        // Selecteer de relevante vlakjes
-        // Neem de originele hoekpunten
-        // Bereken de rotatie per hoekpunt
-        // Verander de originele hoekpunt met de geroteerde hoekpunt
-        // Draai de geselecteerde vlakjes
-
-        int coordinate = 0;
-        int dimension = 0;
         char axis = 'x';
         if (color == Color.WHITE) {
             coordinate = -3;
@@ -114,16 +108,14 @@ public class RubiksKubus implements IRubikCube {
             axis = 'z';
         }
 
-        List<IFace> faces = getAllFaces();
-        Hoekpunt[] p = new Hoekpunt[4];
-        int length = faces.size();
-
         for (int i = 0; i < length; i++) {
+
             for (int j = 0; j < 4; j++) {
                 double cor[] = new double[3];
-                cor[0] = faces.get(i).getFaceCorners()[j].getX();
-                cor[1] = faces.get(i).getFaceCorners()[j].getY();
-                cor[2] = faces.get(i).getFaceCorners()[j].getZ();
+                Point3D corner = faces.get(i).getFaceCorners()[j];
+                cor[0] = corner.getX();
+                cor[1] = corner.getY();
+                cor[2] = corner.getZ();
 
                 if ((int) cor[dimension] == coordinate) {
                     p = getNewCorArray((Vlakje) faces.get(i), axis, degree);
@@ -132,7 +124,6 @@ public class RubiksKubus implements IRubikCube {
                 }
             }
         }
-
         return faces;
     }
 
