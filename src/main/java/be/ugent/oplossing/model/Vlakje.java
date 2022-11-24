@@ -13,6 +13,7 @@ import static java.util.Map.entry;
 public class Vlakje implements IFace {
     private Color kleur;
     private List<Hoekpunt> hoekpunten;
+    boolean rotatationMarked;
 
     // enkel nodig in toString()-methode
     private Map<Color, String> kleurenNamen = new HashMap<Color, String>(Map.ofEntries(

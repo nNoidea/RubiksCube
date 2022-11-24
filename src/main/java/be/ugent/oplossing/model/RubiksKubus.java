@@ -11,6 +11,7 @@ import java.util.*;
 public class RubiksKubus implements IRubikCube {
 
     private List<Kubusje> kubusjes;
+    private List<String> corList = new ArrayList<String>();
 
     // Alle gegevens voor de 27 kubusjes werden in een excel-bestand ingevuld en
     // bewaard.
@@ -66,19 +67,31 @@ public class RubiksKubus implements IRubikCube {
     }
 
     @Override
+    public void rotate(Color color, boolean clockwise) {
+    }
+
+    public List<Kubusje> getKubusjes() {
+        return kubusjes;
+    }
+
+    @Override
     public List<IFace> getRotation(Color color, int degree) {
+        int originalDegree = degree;
+
+        // Normalize degree.
+        if (degree < 0) {
+            degree = -5;
+        } else if (degree > 0) {
+            degree = 5;
+        }
+
         List<IFace> faces = getAllFaces();
         Hoekpunt[] p = new Hoekpunt[4];
         int length = faces.size();
         int coordinate = 0;
         int dimension = 0;
 
-        if (degree < 0) {
-            degree = -1;
-        } else if (degree > 0) {
-            degree = 1;
-        }
-
+        // Get the determenistic dimension and coordinate
         char axis = 'x';
         if (color == Color.WHITE) {
             coordinate = -3;
@@ -100,6 +113,7 @@ public class RubiksKubus implements IRubikCube {
             dimension = 0;
         }
 
+        // Get the axis based on the constant dimension.
         if (dimension == 0) {
             axis = 'x';
         } else if (dimension == 1) {
@@ -107,9 +121,18 @@ public class RubiksKubus implements IRubikCube {
         } else if (dimension == 2) {
             axis = 'z';
         }
-        int a = 0;
 
-        for (int k = 0; k < 5; k++) { // Fixes the rounding problem.
+        if (originalDegree == 0) {
+            corList = new ArrayList<String>(); // Empty the corner list.
+
+            // Mark all faces false for rotation at the start of the animation.
+            for (int i = 0; i < length; i++) {
+                ((Vlakje) faces.get(i)).rotatationMarked = false;
+            }
+
+            // At the start of the animation, mark the relevant faces that are going to be
+            // rotated.
+            int a = 0;
             for (int i = 0; i < length; i++) {
                 int test = 0;
                 for (int j = 0; j < 4; j++) {
@@ -120,32 +143,80 @@ public class RubiksKubus implements IRubikCube {
                     cor[2] = corner.getZ();
 
                     if ((int) cor[dimension] == coordinate) {
-                        p = getNewCorArray((Vlakje) faces.get(i), axis, degree);
-                        ((Vlakje) faces.get(i)).changeHoekpunten(p);
+                        ((Vlakje) faces.get(i)).rotatationMarked = true;
                         break;
                     }
 
-                    if (Math.abs((int) cor[dimension] - coordinate) == 2) {
+                    if (Math.abs(Math.round(cor[dimension] - coordinate)) == 2) {
                         test++;
+                        // if all 4 corners of a face is 2 values away and its corners are all unique,
+                        // mark it.
                         if (test == 4) {
-                            System.out.println(++a);
-                            p = getNewCorArray((Vlakje) faces.get(i), axis, degree);
-                            ((Vlakje) faces.get(i)).changeHoekpunten(p);
+                            if (checkDouble((Vlakje) faces.get(i))) {
+                                System.out.println(++a); // If this prints something else than 9 as the final value,
+                                                         // there's an error. If it doesn't, everything is fine.
+                                ((Vlakje) faces.get(i)).rotatationMarked = true;
+                            }
                         }
                     }
                 }
             }
         }
 
+        for (int i = 0; i < length; i++) {
+            if (((Vlakje) faces.get(i)).rotatationMarked) {
+                p = getNewCorArray((Vlakje) faces.get(i), axis, degree);
+                ((Vlakje) faces.get(i)).changeHoekpunten(p);
+            }
+        }
+
+        // If its the last frame, round all the coordinates.
+        if (Math.abs(originalDegree) == 90) {
+            for (int i = 0; i < length; i++) {
+                for (int j = 0; j < 4; j++) {
+                    int cor[] = new int[3];
+                    Point3D corner = faces.get(i).getFaceCorners()[j];
+                    cor[0] = (int) Math.round(corner.getX());
+                    cor[1] = (int) Math.round(corner.getY());
+                    cor[2] = (int) Math.round(corner.getZ());
+
+                    p[j] = new Hoekpunt(cor[0], cor[1], cor[2]);
+                }
+                ((Vlakje) faces.get(i)).changeHoekpunten(p);
+            }
+        }
         return faces;
     }
 
-    @Override
-    public void rotate(Color color, boolean clockwise) {
-    }
+    // Get all 4 coordinates. Separate each dimension, then sort them from low to
+    // high and then sum them as a string to create a normalized variable to
+    // compare.
+    public boolean checkDouble(Vlakje face) {
+        int[] arrX = new int[4];
+        int[] arrY = new int[4];
+        int[] arrZ = new int[4];
 
-    public List<Kubusje> getKubusjes() {
-        return kubusjes;
+        String coordinate = "";
+        for (int i = 0; i < 4; i++) {
+            Point3D corner = face.getFaceCorners()[i];
+            arrX[i] = (int) Math.round(corner.getX());
+            arrY[i] = (int) Math.round(corner.getY());
+            arrZ[i] = (int) Math.round(corner.getZ());
+        }
+
+        Arrays.sort(arrX);
+        Arrays.sort(arrY);
+        Arrays.sort(arrZ);
+
+        coordinate = Arrays.toString(arrX) + Arrays.toString(arrY) + Arrays.toString(arrZ);
+        // System.out.println(coordinate);
+
+        if (corList.contains(coordinate)) {
+            return false;
+        } else {
+            corList.add(coordinate);
+            return true;
+        }
     }
 
     public Hoekpunt[] getNewCorArray(Vlakje face, char axis, int degree) {
@@ -201,4 +272,5 @@ public class RubiksKubus implements IRubikCube {
 
         return new Point3D(finalPunten[0], finalPunten[1], finalPunten[2]);
     }
+
 }
